@@ -4,47 +4,43 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { mapPins } from "@/lib/mockData";
-import { Camera, Users, Wrench, Route, Coffee, X, Star, Navigation, ChevronRight } from "lucide-react";
+import { X, ChevronRight, Navigation } from "lucide-react";
 
 type FilterKey = "photo" | "meetup" | "shop" | "scenic" | "partner";
 
-const FILTERS: { key: FilterKey; label: string; emoji: string; color: string }[] = [
-  { key: "photo",   label: "Photo Spots",   emoji: "📸", color: "#f59e0b" },
-  { key: "meetup",  label: "Meetups",        emoji: "🚗", color: "#3b82f6" },
-  { key: "shop",    label: "Shops",          emoji: "🔧", color: "#22c55e" },
-  { key: "scenic",  label: "Scenic Roads",   emoji: "🛣️", color: "#a855f7" },
-  { key: "partner", label: "Partners",       emoji: "🤝", color: "#e63946" },
+const FILTERS: { key: FilterKey; label: string }[] = [
+  { key: "photo",   label: "Photo Spots"  },
+  { key: "meetup",  label: "Meetups"      },
+  { key: "shop",    label: "Shops"        },
+  { key: "scenic",  label: "Scenic Roads" },
+  { key: "partner", label: "Partners"     },
 ];
 
-const SHOP_EMOJI: Record<string, string> = {
-  mod: "🔧", tires: "🛞", detail: "✨", mechanic: "🔩", gas: "⛽",
+const SHOP_LABEL: Record<string, string> = {
+  mod: "MOD SHOP", tires: "TIRES", detail: "DETAIL", mechanic: "MECHANIC", gas: "FUEL",
 };
 
-function pin(emoji: string, color: string, size = 34) {
+function dot(color: string, ring = false) {
   return L.divIcon({
     html: `<div style="
-      width:${size}px;height:${size}px;border-radius:50%;
+      width:12px;height:12px;border-radius:50%;
       background:${color};
-      display:flex;align-items:center;justify-content:center;
-      font-size:${size * 0.42}px;
-      border:2px solid rgba(255,255,255,0.15);
-      box-shadow:0 3px 12px rgba(0,0,0,0.6),0 0 0 4px ${color}33
-    ">${emoji}</div>`,
+      ${ring ? `box-shadow:0 0 0 3px rgba(255,255,255,0.08),0 0 0 5px ${color}30` : "box-shadow:0 2px 6px rgba(0,0,0,0.5)"};
+      border:1.5px solid rgba(255,255,255,0.2)
+    "></div>`,
     className: "",
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
   });
 }
 
 interface Detail {
   name: string;
   desc?: string;
-  sub?: string;
-  badge?: string;
-  badgeColor?: string;
-  cta?: string;
-  ctaColor?: string;
+  meta?: string;
   type: FilterKey;
+  badge?: string;
+  cta: string;
 }
 
 export default function MapClient() {
@@ -55,113 +51,109 @@ export default function MapClient() {
   useEffect(() => { setMounted(true); }, []);
 
   const toggle = (k: FilterKey) =>
-    setActive(prev => { const n = new Set(prev); n.has(k) ? n.delete(k) : n.add(k); return n; });
+    setActive(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
 
   if (!mounted) return (
-    <div className="w-full h-full bg-[#0d0d0d] flex items-center justify-center">
+    <div className="w-full h-full flex items-center justify-center" style={{ background: "#0e0e16" }}>
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-[#e63946] border-t-transparent rounded-full animate-spin" />
-        <span className="text-[#555] text-sm">Loading Miami map…</span>
+        <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: "#e10600", borderTopColor: "transparent" }} />
+        <span className="label">Loading Miami</span>
       </div>
     </div>
   );
 
+  const PIN_RED    = dot("#e10600", true);
+  const PIN_WHITE  = dot("#ffffff");
+  const PIN_GREY   = dot("#8888a0");
+  const PIN_DIM    = dot("#4a4a5c");
+
   return (
     <div className="relative w-full h-full">
-      {/* Filter pills */}
-      <div className="absolute top-0 left-0 right-0 z-[1000] flex gap-2 px-3 pt-3 pb-2 overflow-x-auto scrollbar-hide" style={{ background: "linear-gradient(to bottom, rgba(8,8,8,0.9) 0%, transparent 100%)" }}>
+      {/* Filters */}
+      <div className="absolute top-0 inset-x-0 z-[1000] flex gap-2 px-3 pt-3 pb-2 no-scroll overflow-x-auto"
+        style={{ background: "linear-gradient(to bottom, rgba(14,14,22,0.95) 60%, transparent)" }}>
         {FILTERS.map(f => {
           const on = active.has(f.key);
           return (
             <button key={f.key} onClick={() => toggle(f.key)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap border transition-all"
+              className="whitespace-nowrap px-3 py-1.5 rounded-sm text-[10px] font-bold tracking-[0.1em] uppercase border transition-all"
               style={{
-                background: on ? f.color : "rgba(17,17,17,0.9)",
-                borderColor: on ? f.color : "#282828",
-                color: on ? "#fff" : "#666",
-                boxShadow: on ? `0 0 10px ${f.color}44` : "none",
-              }}
-            >
-              <span className="text-[12px]">{f.emoji}</span> {f.label}
+                background: on ? "#e10600" : "rgba(30,30,42,0.9)",
+                borderColor: on ? "#e10600" : "#2c2c3a",
+                color: on ? "#fff" : "#4a4a5c",
+              }}>
+              {f.label}
             </button>
           );
         })}
       </div>
 
-      {/* Location button */}
-      <button className="absolute top-14 right-3 z-[1000] w-9 h-9 rounded-full bg-[#111]/90 border border-[#282828] flex items-center justify-center">
-        <Navigation size={15} className="text-[#888]" />
+      {/* City + compass */}
+      <div className="absolute top-14 left-3 z-[999] pointer-events-none">
+        <span className="label" style={{ color: "#2c2c3a" }}>Miami, FL</span>
+      </div>
+      <button className="absolute top-14 right-3 z-[1000] w-8 h-8 rounded-sm flex items-center justify-center"
+        style={{ background: "rgba(30,30,42,0.9)", border: "1px solid #2c2c3a" }}>
+        <Navigation size={13} style={{ color: "#4a4a5c" }} />
       </button>
 
-      <MapContainer
-        center={[25.7617, -80.1918]}
-        zoom={12}
-        style={{ width: "100%", height: "100%", background: "#0d0d0d" }}
-        zoomControl={false}
-      >
+      <MapContainer center={[25.7617, -80.1918]} zoom={12}
+        style={{ width: "100%", height: "100%", background: "#0e0e16" }} zoomControl={false}>
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
 
         {active.has("photo") && mapPins.photoLocations.map(p =>
-          <Marker key={p.id} position={[p.lat, p.lng]} icon={pin("📸", "#f59e0b")}
-            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, sub: `${p.photos} photos uploaded`, badge: "Photo Spot", badgeColor: "#f59e0b", cta: "See All Photos", ctaColor: "#f59e0b", type: "photo" }) }} />
+          <Marker key={p.id} position={[p.lat, p.lng]} icon={PIN_WHITE}
+            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, meta: `${p.photos} photos`, badge: "PHOTO SPOT", type: "photo", cta: "View Photos" }) }} />
         )}
         {active.has("meetup") && mapPins.meetupSpots.map(p =>
-          <Marker key={p.id} position={[p.lat, p.lng]} icon={pin("🚗", "#3b82f6")}
-            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, sub: `~${p.regulars} regulars`, badge: "Meetup Spot", badgeColor: "#3b82f6", cta: "I'm Heading Here", ctaColor: "#3b82f6", type: "meetup" }) }} />
+          <Marker key={p.id} position={[p.lat, p.lng]} icon={PIN_RED}
+            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, meta: `~${p.regulars} regulars`, badge: "MEETUP", type: "meetup", cta: "I'm Heading Here" }) }} />
         )}
         {active.has("shop") && mapPins.shops.map(p =>
-          <Marker key={p.id} position={[p.lat, p.lng]} icon={pin(SHOP_EMOJI[p.type] || "🔧", p.partner ? "#22c55e" : "#4b5563")}
-            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, sub: `★ ${p.rating}${p.partner ? "  ·  Verified Partner" : ""}`, badge: p.type.charAt(0).toUpperCase() + p.type.slice(1), badgeColor: p.partner ? "#22c55e" : "#555", cta: "View Profile", ctaColor: "#22c55e", type: "shop" }) }} />
+          <Marker key={p.id} position={[p.lat, p.lng]} icon={p.partner ? PIN_WHITE : PIN_GREY}
+            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, meta: `${p.rating} / 5.0${p.partner ? "  ·  Partner" : ""}`, badge: SHOP_LABEL[p.type] || "SHOP", type: "shop", cta: "View Profile" }) }} />
         )}
         {active.has("scenic") && mapPins.scenicRoads.map(p =>
-          <Marker key={p.id} position={[p.lat, p.lng]} icon={pin("🛣️", "#a855f7")}
-            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, badge: "Scenic Road", badgeColor: "#a855f7", cta: "Open Route", ctaColor: "#a855f7", type: "scenic" }) }} />
+          <Marker key={p.id} position={[p.lat, p.lng]} icon={PIN_GREY}
+            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, badge: "SCENIC ROAD", type: "scenic", cta: "Open Route" }) }} />
         )}
         {active.has("partner") && mapPins.partners.map(p =>
-          <Marker key={p.id} position={[p.lat, p.lng]} icon={pin("🤝", "#e63946")}
-            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, sub: p.deal, badge: "Drive 59 Partner", badgeColor: "#e63946", cta: "Claim Deal", ctaColor: "#e63946", type: "partner" }) }} />
+          <Marker key={p.id} position={[p.lat, p.lng]} icon={PIN_RED}
+            eventHandlers={{ click: () => setDetail({ name: p.name, desc: p.description, meta: p.deal, badge: "PARTNER", type: "partner", cta: "View Deal" }) }} />
         )}
       </MapContainer>
 
-      {/* City label */}
-      <div className="absolute top-14 left-3 z-[999] pointer-events-none">
-        <span className="text-[10px] font-bold text-[#333] uppercase tracking-widest">Miami, FL</span>
-      </div>
-
       {/* Detail panel */}
       {detail && (
-        <div
-          className="absolute bottom-0 left-0 right-0 z-[1000] bg-[#111] border-t border-[#222] rounded-t-3xl p-5 shadow-2xl"
-          style={{ boxShadow: `0 -8px 40px rgba(0,0,0,0.8), 0 0 0 1px #1e1e1e` }}
-        >
-          {/* Handle bar */}
-          <div className="w-10 h-1 bg-[#2a2a2a] rounded-full mx-auto mb-4" />
-
-          <div className="flex items-start gap-3">
-            <div className="flex-1">
-              {detail.badge && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full mb-2 inline-block"
-                  style={{ background: `${detail.badgeColor}22`, color: detail.badgeColor }}>
-                  {detail.badge}
-                </span>
-              )}
-              <h3 className="font-black text-white text-[17px] leading-tight mb-1">{detail.name}</h3>
-              {detail.desc && <p className="text-[#666] text-[13px] leading-relaxed">{detail.desc}</p>}
-              {detail.sub && <p className="text-[13px] font-semibold mt-1.5" style={{ color: detail.badgeColor }}>{detail.sub}</p>}
-            </div>
-            <button onClick={() => setDetail(null)} className="w-7 h-7 rounded-full bg-[#1e1e1e] flex items-center justify-center shrink-0">
-              <X size={14} className="text-[#666]" />
-            </button>
+        <div className="absolute bottom-0 inset-x-0 z-[1000]"
+          style={{ background: "#1e1e2a", borderTop: "1px solid #2c2c3a" }}>
+          {/* Handle */}
+          <div className="flex justify-center pt-3 pb-1">
+            <div className="w-8 h-[3px] rounded-full" style={{ background: "#2c2c3a" }} />
           </div>
 
-          {detail.cta && (
-            <button
-              className="mt-4 w-full py-3 rounded-2xl text-sm font-bold flex items-center justify-center gap-1.5"
-              style={{ background: detail.ctaColor, color: detail.type === "photo" ? "#000" : "#fff" }}
-            >
-              {detail.cta} <ChevronRight size={14} />
+          <div className="px-5 pb-5 pt-3">
+            <div className="flex items-start gap-3">
+              <div className="flex-1">
+                <span className="label mb-1.5 block">{detail.badge}</span>
+                <h3 className="text-[17px] font-black text-white leading-tight tracking-tight">{detail.name}</h3>
+                {detail.desc && <p className="text-[13px] mt-1 leading-relaxed" style={{ color: "#8888a0" }}>{detail.desc}</p>}
+                {detail.meta && (
+                  <p className="text-[12px] font-bold mt-2 tracking-wide" style={{ color: "#e10600" }}>{detail.meta}</p>
+                )}
+              </div>
+              <button onClick={() => setDetail(null)}
+                className="w-7 h-7 rounded-sm flex items-center justify-center shrink-0 mt-0.5"
+                style={{ background: "#252532", border: "1px solid #2c2c3a" }}>
+                <X size={13} style={{ color: "#4a4a5c" }} />
+              </button>
+            </div>
+
+            <button className="mt-4 w-full py-3 rounded-sm text-[12px] font-black tracking-[0.1em] uppercase flex items-center justify-center gap-1.5 text-white"
+              style={{ background: "#e10600" }}>
+              {detail.cta} <ChevronRight size={13} strokeWidth={3} />
             </button>
-          )}
+          </div>
         </div>
       )}
     </div>

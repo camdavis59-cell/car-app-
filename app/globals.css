@@ -1,61 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand */
-  --red:       #e63946;
-  --red-dim:   #b02a35;
-  --red-glow:  rgba(230,57,70,0.18);
+  --bg:       #15151e;
+  --s1:       #1e1e2a;
+  --s2:       #252532;
+  --s3:       #2e2e3c;
+  --border:   #2c2c3a;
+  --border-2: #383848;
 
-  /* Surfaces */
-  --bg:        #080808;
-  --surface:   #111111;
-  --surface-2: #181818;
-  --surface-3: #222222;
-  --border:    #242424;
-  --border-2:  #2e2e2e;
+  --red:      #e10600;
+  --red-dim:  rgba(225,6,0,0.12);
 
-  /* Text */
-  --text:       #f0f0f0;
-  --text-sub:   #aaaaaa;
-  --text-muted: #555555;
+  --white:    #ffffff;
+  --grey-1:   #c8c8d0;
+  --grey-2:   #8888a0;
+  --grey-3:   #4a4a5c;
 
-  /* Semantic */
-  --green:  #22c55e;
-  --amber:  #f59e0b;
-  --blue:   #3b82f6;
-  --purple: #a855f7;
+  --green:    #00d2be;
+  --amber:    #ffa600;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
-
-html { -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 body {
   background: var(--bg);
-  color: var(--text);
+  color: var(--white);
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  margin: 0;
 }
 
 /* Map */
-.leaflet-container { background: #0d0d0d !important; }
-.leaflet-tile { filter: brightness(0.78) saturate(0.55) contrast(1.15); }
-.leaflet-control-attribution { display: none !important; }
+.leaflet-container { background: #0e0e16 !important; }
+.leaflet-tile { filter: brightness(0.7) saturate(0.3) contrast(1.2) hue-rotate(200deg); }
+.leaflet-control-attribution,
+.leaflet-control-zoom { display: none !important; }
 
-/* Utility */
-.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
-.scrollbar-hide::-webkit-scrollbar { display: none; }
+/* Scrollbar */
+.no-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scroll::-webkit-scrollbar { display: none; }
 
-/* Racing stripe decoration */
-.race-stripe {
-  background: linear-gradient(90deg, var(--red) 0%, var(--red) 40%, transparent 40%);
+/* Label style used everywhere */
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey-2);
 }
 
-/* Card glow on hover */
-.card-hover {
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.card-hover:hover {
-  border-color: #333;
-  box-shadow: 0 0 0 1px #333;
-}
