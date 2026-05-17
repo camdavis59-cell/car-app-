@@ -1,147 +1,146 @@
 "use client";
 import { useState } from "react";
 import { events } from "@/lib/mockData";
-import { CalendarDays, MapPin, Users, ChevronRight, Filter, Plus } from "lucide-react";
+import { CalendarDays, MapPin, Users, Plus, ChevronRight, Flame } from "lucide-react";
 
-const typeColors: Record<string, string> = {
-  meetup: "#3b82f6",
-  competition: "#f59e0b",
-  cruise: "#10b981",
-  show: "#8b5cf6",
-  rally: "#e63946",
+const TYPE_COLOR: Record<string, string> = {
+  meetup: "#3b82f6", competition: "#f59e0b", cruise: "#22c55e", show: "#a855f7", rally: "#e63946",
 };
-
-const typeLabels: Record<string, string> = {
+const TYPE_LABEL: Record<string, string> = {
   meetup: "Meet", competition: "Competition", cruise: "Cruise", show: "Car Show", rally: "Rally",
 };
+const TYPE_EMOJI: Record<string, string> = {
+  meetup: "🚗", competition: "🏆", cruise: "🛣️", show: "🎪", rally: "🏁",
+};
 
-const filters = ["All", "Meet", "Cruise", "Car Show", "Competition", "Rally"];
+const ALL_FILTERS = ["All", "Meet", "Cruise", "Car Show", "Competition", "Rally"];
+
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+}
 
 export default function EventsPage() {
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [filter, setFilter] = useState("All");
   const [rsvpd, setRsvpd] = useState<Set<string>>(new Set());
 
-  const filtered = activeFilter === "All"
-    ? events
-    : events.filter(e => typeLabels[e.type] === activeFilter);
+  const list = filter === "All" ? events : events.filter(e => TYPE_LABEL[e.type] === filter);
 
-  const toggleRsvp = (id: string) => {
-    setRsvpd(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
+  const toggle = (id: string) =>
+    setRsvpd(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   return (
-    <div className="pt-[53px] pb-[76px] min-h-screen bg-[#0a0a0a]">
+    <div className="pt-[53px] pb-[72px] min-h-screen bg-[#080808]">
       {/* Header */}
-      <div className="px-4 pt-5 pb-3">
-        <div className="flex items-center justify-between mb-1">
-          <h1 className="text-xl font-bold text-white">Events</h1>
-          <button className="flex items-center gap-1.5 bg-[#e63946] text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-            <Plus size={13} /> Host Event
+      <div className="px-4 pt-5 pb-1">
+        <div className="flex items-center justify-between mb-0.5">
+          <div>
+            <h1 className="text-[22px] font-black text-white tracking-tight">Events</h1>
+            <p className="text-[#555] text-[12px] font-medium">Miami, FL · {events.length} upcoming</p>
+          </div>
+          <button className="flex items-center gap-1.5 bg-[#e63946] text-white text-[12px] font-bold px-3.5 py-2 rounded-full">
+            <Plus size={13} strokeWidth={2.5} /> Host Event
           </button>
         </div>
-        <p className="text-[#888] text-sm">Miami, FL · Upcoming shows & meets</p>
       </div>
 
-      {/* Filter pills */}
-      <div className="flex gap-2 px-4 overflow-x-auto scrollbar-hide pb-3">
-        {filters.map(f => (
-          <button
-            key={f}
-            onClick={() => setActiveFilter(f)}
-            className="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border transition-all"
-            style={{
-              background: activeFilter === f ? "#e63946" : "#141414",
-              borderColor: activeFilter === f ? "#e63946" : "#2a2a2a",
-              color: activeFilter === f ? "#fff" : "#888",
-            }}
-          >
-            {f}
-          </button>
-        ))}
+      {/* Filter bar */}
+      <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-hide">
+        {ALL_FILTERS.map(f => {
+          const on = filter === f;
+          return (
+            <button key={f} onClick={() => setFilter(f)}
+              className="whitespace-nowrap px-3.5 py-1.5 rounded-full text-[11px] font-bold border transition-all"
+              style={{
+                background: on ? "#e63946" : "#111",
+                borderColor: on ? "#e63946" : "#242424",
+                color: on ? "#fff" : "#555",
+              }}>
+              {f}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Event list */}
       <div className="px-4 flex flex-col gap-3">
-        {filtered.map(event => {
-          const attending = rsvpd.has(event.id);
-          const rsvpCount = event.rsvp + (attending ? 1 : 0);
-          const pct = Math.round((rsvpCount / event.max) * 100);
-          const color = typeColors[event.type] || "#888";
+        {list.map(ev => {
+          const going = rsvpd.has(ev.id);
+          const count = ev.rsvp + (going ? 1 : 0);
+          const pct = Math.round((count / ev.max) * 100);
+          const hot = pct >= 80;
+          const color = TYPE_COLOR[ev.type];
 
           return (
-            <div key={event.id} className="bg-[#141414] border border-[#1e1e1e] rounded-2xl overflow-hidden">
-              {/* Color stripe */}
-              <div className="h-1" style={{ background: color }} />
+            <article key={ev.id} className="bg-[#111] border border-[#1c1c1c] rounded-2xl overflow-hidden card-hover">
+              {/* Top accent line */}
+              <div className="h-[3px]" style={{ background: color }} />
 
               <div className="p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${color}22`, color }}>
-                        {typeLabels[event.type]}
-                      </span>
-                      {event.tags.includes("sponsored") && (
-                        <span className="text-[10px] text-[#888] border border-[#2a2a2a] px-2 py-0.5 rounded-full">Sponsored</span>
-                      )}
-                    </div>
-                    <h3 className="font-bold text-white text-base leading-tight">{event.title}</h3>
-                  </div>
-                </div>
-
-                <p className="text-[#888] text-xs mb-3 leading-relaxed">{event.description}</p>
-
-                <div className="flex flex-col gap-1.5 mb-3">
-                  <div className="flex items-center gap-2 text-xs text-[#888]">
-                    <CalendarDays size={12} className="text-[#555]" />
-                    {new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} · {event.time}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-[#888]">
-                    <MapPin size={12} className="text-[#555]" />
-                    {event.location}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-[#888]">
-                    <Users size={12} className="text-[#555]" />
-                    {rsvpCount} / {event.max} going · by {event.organizer}
-                  </div>
-                </div>
-
-                {/* RSVP progress bar */}
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] text-[#555]">Attendance</span>
-                    <span className="text-[10px] font-semibold" style={{ color: pct > 80 ? "#e63946" : "#888" }}>
-                      {pct}% full{pct > 80 ? " · Almost full!" : ""}
+                {/* Row 1: type badge + hot tag */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                    style={{ background: `${color}1a`, color }}>
+                    {TYPE_EMOJI[ev.type]} {TYPE_LABEL[ev.type]}
+                  </span>
+                  {hot && (
+                    <span className="flex items-center gap-1 text-[10px] font-bold text-[#e63946] bg-[#e6394618] px-2 py-0.5 rounded-full">
+                      <Flame size={9} /> Filling up
                     </span>
+                  )}
+                  {ev.tags.includes("sponsored") && (
+                    <span className="text-[10px] text-[#444] border border-[#222] px-2 py-0.5 rounded-full">Sponsored</span>
+                  )}
+                </div>
+
+                <h2 className="text-[16px] font-black text-white leading-tight mb-1">{ev.title}</h2>
+                <p className="text-[#555] text-[12px] leading-relaxed mb-3">{ev.description}</p>
+
+                {/* Meta */}
+                <div className="flex flex-col gap-1.5 mb-3">
+                  <div className="flex items-center gap-2 text-[12px] text-[#555]">
+                    <CalendarDays size={12} className="text-[#333]" />
+                    <span>{formatDate(ev.date)} · {ev.time}</span>
                   </div>
-                  <div className="h-1.5 bg-[#1e1e1e] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: pct > 80 ? "#e63946" : color }} />
+                  <div className="flex items-center gap-2 text-[12px] text-[#555]">
+                    <MapPin size={12} className="text-[#333]" />
+                    <span>{ev.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[12px] text-[#555]">
+                    <Users size={12} className="text-[#333]" />
+                    <span><span className="text-[#888] font-semibold">{count}</span> / {ev.max} going · by <span className="text-[#888]">{ev.organizer}</span></span>
+                  </div>
+                </div>
+
+                {/* Attendance bar */}
+                <div className="mb-3">
+                  <div className="flex justify-between mb-1">
+                    <span className="text-[10px] text-[#333] font-medium uppercase tracking-wider">Attendance</span>
+                    <span className="text-[10px] font-bold" style={{ color: hot ? "#e63946" : "#444" }}>{pct}%</span>
+                  </div>
+                  <div className="h-1 bg-[#1a1a1a] rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${pct}%`, background: hot ? "#e63946" : color }} />
                   </div>
                 </div>
 
                 {/* Tags */}
                 <div className="flex gap-1.5 flex-wrap mb-3">
-                  {event.tags.filter(t => t !== "sponsored").map(tag => (
-                    <span key={tag} className="text-[10px] text-[#555] border border-[#2a2a2a] px-2 py-0.5 rounded-full">#{tag}</span>
+                  {ev.tags.filter(t => t !== "sponsored").map(t => (
+                    <span key={t} className="text-[10px] text-[#383838] border border-[#1e1e1e] px-2 py-0.5 rounded-full">#{t}</span>
                   ))}
                 </div>
 
-                <button
-                  onClick={() => toggleRsvp(event.id)}
-                  className="w-full py-2.5 rounded-xl text-sm font-bold transition-all"
+                {/* RSVP button */}
+                <button onClick={() => toggle(ev.id)}
+                  className="w-full py-3 rounded-xl text-[13px] font-black transition-all"
                   style={{
-                    background: attending ? `${color}22` : color,
-                    color: attending ? color : "#fff",
-                    border: `1px solid ${color}`,
-                  }}
-                >
-                  {attending ? "✓ You're Going" : "RSVP"}
+                    background: going ? `${color}18` : color,
+                    color: going ? color : (ev.type === "competition" ? "#000" : "#fff"),
+                    border: `1.5px solid ${going ? color : "transparent"}`,
+                  }}>
+                  {going ? `✓  You're Going` : "RSVP  →"}
                 </button>
               </div>
-            </div>
+            </article>
           );
         })}
       </div>
