@@ -4,6 +4,8 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { mapPins } from "@/lib/mockData";
+import { useStore } from "@/lib/store";
+import { Plus } from "lucide-react";
 import { X, ChevronRight, Navigation } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -85,6 +87,7 @@ export default function MapClient() {
   const [detail, setDetail] = useState<Detail | null>(null);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const { photoLocations, events: storeEvents } = useStore();
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -121,20 +124,24 @@ export default function MapClient() {
         })}
       </div>
 
-      {/* Compass */}
-      <button className="absolute top-14 right-3 z-[1000] w-8 h-8 rounded-sm flex items-center justify-center"
-        style={{ background: "rgba(30,30,42,0.9)", border: "1px solid #2c2c3a" }}>
-        <Navigation size={13} style={{ color: "#4a4a5c" }} />
-      </button>
+      {/* Compass + add photo location */}
+      <div className="absolute top-14 right-3 z-[1000] flex flex-col gap-2">
+        <button className="w-8 h-8 rounded-sm flex items-center justify-center" style={{ background: "rgba(30,30,42,0.9)", border: "1px solid #2c2c3a" }}>
+          <Navigation size={13} style={{ color: "#4a4a5c" }} />
+        </button>
+        <button onClick={() => router.push("/photo-locations/new")} className="w-8 h-8 rounded-sm flex items-center justify-center" style={{ background: "#e10600" }}>
+          <Plus size={14} style={{ color: "#fff" }} />
+        </button>
+      </div>
 
       <MapContainer center={[25.7617, -80.1918]} zoom={12}
         style={{ width: "100%", height: "100%", background: "#0e0e16" }} zoomControl={false}>
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
 
-        {active.has("photo") && mapPins.photoLocations.map(p =>
+        {active.has("photo") && photoLocations.map(p =>
           <Marker key={p.id} position={[p.lat, p.lng]} icon={photoPin(p.name, p.cover)}
             eventHandlers={{ click: () => setDetail({
-              name: p.name, desc: p.description, meta: `${p.photos} photos`,
+              name: p.name, desc: p.description, meta: `${p.photos.length} photos`,
               badge: "PHOTO SPOT", type: "photo", linkTo: `/photo-locations/${p.id}`,
             }) }} />
         )}
@@ -144,6 +151,14 @@ export default function MapClient() {
             eventHandlers={{ click: () => setDetail({
               name: p.name, desc: p.description, meta: `~${p.regulars} regulars`,
               badge: "MEETUP", type: "meetup",
+            }) }} />
+        )}
+
+        {active.has("meetup") && storeEvents.filter(e => e.lat).map(e =>
+          <Marker key={`ev-${e.id}`} position={[e.lat, e.lng]} icon={meetupPin(e.title)}
+            eventHandlers={{ click: () => setDetail({
+              name: e.title, desc: e.description, meta: `${e.rsvp} going · ${e.date}`,
+              badge: "EVENT", type: "meetup", linkTo: `/events/${e.id}`,
             }) }} />
         )}
 

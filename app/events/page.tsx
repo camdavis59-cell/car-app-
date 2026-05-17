@@ -1,125 +1,109 @@
 "use client";
-import { useState } from "react";
+import { useStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
-import { events } from "@/lib/mockData";
-import { CalendarDays, MapPin, Users, Plus, ChevronRight } from "lucide-react";
+import { Plus, CalendarDays, MapPin, Users, ChevronRight, Flame } from "lucide-react";
+import { useState } from "react";
+import Image from "next/image";
 
-const TYPE_LABEL: Record<string, string> = {
-  meetup: "MEET", competition: "COMPETITION", cruise: "CRUISE", show: "SHOW", rally: "RALLY",
-};
-const FILTERS = ["ALL", "MEET", "CRUISE", "SHOW", "COMPETITION", "RALLY"];
-
-function fmt(d: string) {
-  return new Date(d).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }).toUpperCase();
-}
+const TYPE_LABEL: Record<string,string> = { meetup:"MEET", competition:"COMPETITION", cruise:"CRUISE", show:"SHOW", rally:"RALLY" };
+const FILTERS = ["ALL","MEET","CRUISE","SHOW","COMPETITION","RALLY"];
+function fmt(d:string){ return new Date(d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}).toUpperCase(); }
 
 export default function EventsPage() {
-  const [filter, setFilter] = useState("ALL");
-  const [rsvpd, setRsvpd] = useState<Set<string>>(new Set());
-
+  const { events, rsvpdEvents, toggleRsvp } = useStore();
   const router = useRouter();
-  const list = filter === "ALL" ? events : events.filter(e => TYPE_LABEL[e.type] === filter);
-  const toggle = (id: string) =>
-    setRsvpd(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const [filter, setFilter] = useState("ALL");
+
+  const list = filter==="ALL" ? events : events.filter(e => TYPE_LABEL[e.type]===filter);
 
   return (
-    <div className="pt-14 pb-[58px] min-h-screen" style={{ background: "#15151e" }}>
-
-      {/* Page header */}
-      <div className="px-4 pt-5 pb-4" style={{ borderBottom: "1px solid #2c2c3a" }}>
+    <div className="pt-14 pb-[58px] min-h-screen" style={{ background:"#15151e" }}>
+      <div className="px-4 pt-5 pb-4" style={{ borderBottom:"1px solid #2c2c3a" }}>
         <div className="flex items-end justify-between">
           <div>
-            <p className="label mb-1">Miami, FL</p>
+            <p style={{ fontSize:"10px", fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", color:"#4a4a5c", marginBottom:"4px" }}>Miami, FL</p>
             <h1 className="text-[22px] font-black text-white tracking-tight">Events</h1>
           </div>
-          <button className="flex items-center gap-1.5 px-3.5 py-2 rounded-sm text-[11px] font-black tracking-[0.08em] uppercase text-white"
-            style={{ background: "#e10600" }}>
-            <Plus size={12} strokeWidth={3} /> Host
+          <button onClick={() => router.push("/events/new")}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-sm text-[11px] font-black tracking-[0.08em] uppercase text-white"
+            style={{ background:"#e10600" }}>
+            <Plus size={12} strokeWidth={3} /> Host Event
           </button>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-0 no-scroll overflow-x-auto" style={{ borderBottom: "1px solid #2c2c3a" }}>
+      <div className="flex no-scroll overflow-x-auto" style={{ borderBottom:"1px solid #2c2c3a" }}>
         {FILTERS.map(f => {
-          const on = filter === f;
+          const on = filter===f;
           return (
             <button key={f} onClick={() => setFilter(f)}
-              className="px-4 py-3 text-[10px] font-black tracking-[0.12em] transition-all relative whitespace-nowrap"
-              style={{ color: on ? "#ffffff" : "#4a4a5c" }}>
+              className="px-4 py-3 whitespace-nowrap relative"
+              style={{ fontSize:"10px", fontWeight:700, letterSpacing:"0.12em", color: on?"#fff":"#4a4a5c" }}>
               {f}
-              {on && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "#e10600" }} />}
+              {on && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background:"#e10600" }} />}
             </button>
           );
         })}
       </div>
 
-      {/* Event list */}
-      <div className="flex flex-col" style={{ borderBottom: "1px solid #2c2c3a" }}>
+      <div className="flex flex-col" style={{ borderBottom:"1px solid #2c2c3a" }}>
         {list.map((ev, i) => {
-          const going = rsvpd.has(ev.id);
-          const count = ev.rsvp + (going ? 1 : 0);
-          const pct = Math.round((count / ev.max) * 100);
+          const going = rsvpdEvents.includes(ev.id);
+          const pct = Math.round((ev.rsvp / ev.max) * 100);
           const filling = pct >= 75;
-
           return (
-            <article key={ev.id} className="relative"
-              style={{ borderBottom: i < list.length - 1 ? "1px solid #1e1e2a" : "none" }}>
-              {/* Left accent bar */}
-              <div className="absolute left-0 top-4 bottom-4 w-[2px]"
-                style={{ background: going ? "#e10600" : "#2c2c3a" }} />
+            <article key={ev.id} className="relative" style={{ borderBottom: i<list.length-1?"1px solid #1e1e2a":"none" }}>
+              <div className="absolute left-0 top-0 bottom-0 w-[2px]" style={{ background: going?"#e10600":"#2c2c3a" }} />
 
-              <div className="pl-5 pr-4 py-5">
-                {/* Type + date row */}
+              {/* Banner */}
+              <div className="h-[60px] relative overflow-hidden" style={{ background:"#1e1e2a" }}>
+                <Image src={ev.banner} alt={ev.title} fill className="object-cover" style={{ opacity:0.55 }} />
+              </div>
+
+              <div className="pl-5 pr-4 py-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="label">{TYPE_LABEL[ev.type]}</span>
-                  <span className="text-[10px] font-bold tracking-wide" style={{ color: "#4a4a5c" }}>{fmt(ev.date)}</span>
+                  <div className="flex items-center gap-2">
+                    <span style={{ fontSize:"10px", fontWeight:700, letterSpacing:"0.1em", color:"#4a4a5c", textTransform:"uppercase" }}>{TYPE_LABEL[ev.type]}</span>
+                    {ev.private && <span style={{ fontSize:"10px", fontWeight:700, color:"#a855f7", textTransform:"uppercase", letterSpacing:"0.08em" }}>PRIVATE</span>}
+                    {filling && <span className="flex items-center gap-0.5" style={{ fontSize:"10px", fontWeight:700, color:"#e10600" }}><Flame size={9}/> FILLING</span>}
+                  </div>
+                  <span style={{ fontSize:"10px", fontWeight:700, color:"#4a4a5c" }}>{fmt(ev.date)}</span>
                 </div>
 
                 <h2 className="text-[16px] font-black text-white tracking-tight leading-tight mb-1">{ev.title}</h2>
-                <p className="text-[12px] leading-relaxed mb-3" style={{ color: "#6666780" }}>
-                  <span style={{ color: "#8888a0" }}>{ev.description}</span>
-                </p>
+                <p className="text-[12px] leading-relaxed mb-3" style={{ color:"#8888a0" }}>{ev.description}</p>
 
-                {/* Meta row */}
-                <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4">
-                  <span className="flex items-center gap-1.5 text-[11px]" style={{ color: "#4a4a5c" }}>
-                    <CalendarDays size={11} /> {ev.time}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-[11px]" style={{ color: "#4a4a5c" }}>
-                    <MapPin size={11} /> {ev.location}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-[11px]" style={{ color: "#4a4a5c" }}>
-                    <Users size={11} />
-                    <span className="font-bold" style={{ color: filling ? "#e10600" : "#8888a0" }}>{count}</span>
-                    <span>/ {ev.max}</span>
-                    {filling && <span className="font-bold" style={{ color: "#e10600" }}>· FILLING</span>}
+                <div className="flex flex-col gap-1.5 mb-3">
+                  <span className="flex items-center gap-2 text-[11px]" style={{ color:"#4a4a5c" }}><CalendarDays size={11}/> {ev.time}</span>
+                  <span className="flex items-center gap-2 text-[11px]" style={{ color:"#4a4a5c" }}><MapPin size={11}/> {ev.location}</span>
+                  <span className="flex items-center gap-2 text-[11px]" style={{ color:"#4a4a5c" }}>
+                    <Users size={11}/>
+                    <span className="font-bold" style={{ color: filling?"#e10600":"#8888a0" }}>{ev.rsvp}</span> / {ev.max} going
                   </span>
                 </div>
 
-                {/* Attendance bar */}
-                <div className="mb-4">
-                  <div className="h-[3px] rounded-none overflow-hidden" style={{ background: "#1e1e2a" }}>
-                    <div className="h-full transition-all duration-500"
-                      style={{ width: `${pct}%`, background: filling ? "#e10600" : "#2c2c3a" }} />
+                <div className="mb-3">
+                  <div className="h-[3px] overflow-hidden" style={{ background:"#1e1e2a" }}>
+                    <div className="h-full" style={{ width:`${pct}%`, background: filling?"#e10600":"#2c2c3a" }} />
                   </div>
                 </div>
 
-                {/* Actions */}
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {ev.tags.slice(0,4).map(t => (
+                    <span key={t} style={{ fontSize:"10px", color:"#383848", border:"1px solid #1e1e2a", borderRadius:"3px", padding:"2px 8px" }}>#{t}</span>
+                  ))}
+                </div>
+
                 <div className="flex gap-2">
-                  <button onClick={() => toggle(ev.id)}
-                    className="flex-1 py-2.5 text-[11px] font-black tracking-[0.1em] uppercase transition-all rounded-sm"
-                    style={{
-                      background: going ? "transparent" : "#e10600",
-                      color: going ? "#e10600" : "#ffffff",
-                      border: going ? "1px solid #e10600" : "1px solid transparent",
-                    }}>
+                  <button onClick={() => toggleRsvp(ev.id)}
+                    className="flex-1 py-2.5 rounded-sm text-[11px] font-black tracking-[0.1em] uppercase"
+                    style={{ background: going?"transparent":"#e10600", color: going?"#e10600":"#fff", border: going?"1px solid #e10600":"1px solid transparent" }}>
                     {going ? "✓  Attending" : "RSVP"}
                   </button>
                   <button onClick={() => router.push(`/events/${ev.id}`)}
                     className="px-3.5 py-2.5 rounded-sm flex items-center justify-center"
-                    style={{ background: "#1e1e2a", border: "1px solid #2c2c3a" }}>
-                    <ChevronRight size={15} style={{ color: "#8888a0" }} />
+                    style={{ background:"#1e1e2a", border:"1px solid #2c2c3a" }}>
+                    <ChevronRight size={15} style={{ color:"#8888a0" }} />
                   </button>
                 </div>
               </div>
