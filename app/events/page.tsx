@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { events } from "@/lib/mockData";
 import { CalendarDays, MapPin, Users, Plus, ChevronRight } from "lucide-react";
 
@@ -16,6 +17,7 @@ export default function EventsPage() {
   const [filter, setFilter] = useState("ALL");
   const [rsvpd, setRsvpd] = useState<Set<string>>(new Set());
 
+  const router = useRouter();
   const list = filter === "ALL" ? events : events.filter(e => TYPE_LABEL[e.type] === filter);
   const toggle = (id: string) =>
     setRsvpd(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -103,16 +105,23 @@ export default function EventsPage() {
                   </div>
                 </div>
 
-                {/* RSVP */}
-                <button onClick={() => toggle(ev.id)}
-                  className="w-full py-2.5 text-[11px] font-black tracking-[0.1em] uppercase transition-all rounded-sm"
-                  style={{
-                    background: going ? "transparent" : "#e10600",
-                    color: going ? "#e10600" : "#ffffff",
-                    border: going ? "1px solid #e10600" : "1px solid transparent",
-                  }}>
-                  {going ? "✓  Attending" : "RSVP"}
-                </button>
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <button onClick={() => toggle(ev.id)}
+                    className="flex-1 py-2.5 text-[11px] font-black tracking-[0.1em] uppercase transition-all rounded-sm"
+                    style={{
+                      background: going ? "transparent" : "#e10600",
+                      color: going ? "#e10600" : "#ffffff",
+                      border: going ? "1px solid #e10600" : "1px solid transparent",
+                    }}>
+                    {going ? "✓  Attending" : "RSVP"}
+                  </button>
+                  <button onClick={() => router.push(`/events/${ev.id}`)}
+                    className="px-3.5 py-2.5 rounded-sm flex items-center justify-center"
+                    style={{ background: "#1e1e2a", border: "1px solid #2c2c3a" }}>
+                    <ChevronRight size={15} style={{ color: "#8888a0" }} />
+                  </button>
+                </div>
               </div>
             </article>
           );

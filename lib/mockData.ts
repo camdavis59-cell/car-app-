@@ -1,16 +1,16 @@
 export const mapPins = {
   photoLocations: [
-    { id: "p1", lat: 25.7617, lng: -80.1918, name: "Wynwood Walls", description: "Iconic murals, perfect backdrop for car photos", photos: 142 },
-    { id: "p2", lat: 25.7827, lng: -80.1300, name: "Design District Arch", description: "Modern architecture meets chrome", photos: 89 },
-    { id: "p3", lat: 25.7488, lng: -80.2384, name: "Miracle Mile Strip", description: "Classic strip for rolling shots", photos: 67 },
-    { id: "p4", lat: 25.7907, lng: -80.1300, name: "Brickell City Centre", description: "Glass towers reflect everything", photos: 203 },
-    { id: "p5", lat: 25.7743, lng: -80.1937, name: "Overtown Bridge", description: "Underpass with great lighting at night", photos: 55 },
+    { id: "p1", lat: 25.7617, lng: -80.1918, name: "Wynwood Walls",       description: "Iconic murals, perfect backdrop for car photos", photos: 142, cover: "https://picsum.photos/seed/wynwood1/600/400"   },
+    { id: "p2", lat: 25.7827, lng: -80.1300, name: "Design District",     description: "Modern architecture meets chrome",               photos: 89,  cover: "https://picsum.photos/seed/design22/600/400"  },
+    { id: "p3", lat: 25.7488, lng: -80.2384, name: "Miracle Mile Strip",  description: "Classic strip for rolling shots",                photos: 67,  cover: "https://picsum.photos/seed/miracle3/600/400"  },
+    { id: "p4", lat: 25.7907, lng: -80.1300, name: "Brickell City Centre",description: "Glass towers reflect everything",                photos: 203, cover: "https://picsum.photos/seed/brickell4/600/400" },
+    { id: "p5", lat: 25.7743, lng: -80.1937, name: "Overtown Bridge",     description: "Underpass with great lighting at night",         photos: 55,  cover: "https://picsum.photos/seed/overtown5/600/400" },
   ],
   meetupSpots: [
-    { id: "m1", lat: 25.8119, lng: -80.1400, name: "Aventura Mall Lot", description: "North lot, active every Friday night", regulars: 40 },
-    { id: "m2", lat: 25.7356, lng: -80.2625, name: "Bird Road Lot", description: "Sunday morning classics meetup", regulars: 25 },
-    { id: "m3", lat: 25.7989, lng: -80.2500, name: "Hialeah Speedway Area", description: "Saturday nights, all builds welcome", regulars: 60 },
-    { id: "m4", lat: 25.7650, lng: -80.1340, name: "Bayfront Park", description: "Waterfront meetup, downtown views", regulars: 35 },
+    { id: "m1", lat: 25.8119, lng: -80.1400, name: "Aventura Mall Lot",     description: "North lot, active every Friday night",   regulars: 40 },
+    { id: "m2", lat: 25.7356, lng: -80.2625, name: "Bird Road Lot",         description: "Sunday morning classics meetup",          regulars: 25 },
+    { id: "m3", lat: 25.7989, lng: -80.2500, name: "Hialeah Speedway Area", description: "Saturday nights, all builds welcome",     regulars: 60 },
+    { id: "m4", lat: 25.7650, lng: -80.1340, name: "Bayfront Park",         description: "Waterfront meetup, downtown views",       regulars: 35 },
   ],
   shops: [
     { id: "s1", lat: 25.7980, lng: -80.2620, name: "Miami Motorsport", type: "mod", description: "Full builds, custom fabrication", rating: 4.8, partner: true },
@@ -149,6 +149,42 @@ export const clubs = [
     tags: ["lowrider", "custom", "classic", "culture"],
   },
 ]
+
+// Photo feed for each location — seed-stable picsum images
+export const locationPhotos: Record<string, { id: string; url: string; user: string; car: string; likes: number; ago: string }[]> = {
+  p1: [
+    { id: "f1",  url: "https://picsum.photos/seed/w1/600/600",  user: "@carlosriv59",  car: "1994 Supra",          likes: 84,  ago: "2h"    },
+    { id: "f2",  url: "https://picsum.photos/seed/w2/600/600",  user: "@miamiturbo",   car: "2020 GT-R",           likes: 61,  ago: "5h"    },
+    { id: "f3",  url: "https://picsum.photos/seed/w3/600/600",  user: "@305builds",    car: "Ferrari 488",         likes: 210, ago: "1d"    },
+    { id: "f4",  url: "https://picsum.photos/seed/w4/600/600",  user: "@southbeachv8", car: "Camaro SS",           likes: 47,  ago: "1d"    },
+    { id: "f5",  url: "https://picsum.photos/seed/w5/600/600",  user: "@jdmmiami",     car: "Honda S2000",         likes: 99,  ago: "2d"    },
+    { id: "f6",  url: "https://picsum.photos/seed/w6/600/600",  user: "@brickellgt",   car: "McLaren 720S",        likes: 315, ago: "3d"    },
+  ],
+  p2: [
+    { id: "f7",  url: "https://picsum.photos/seed/d1/600/600",  user: "@designdistrict","car": "Lamborghini Urus", likes: 188, ago: "3h"    },
+    { id: "f8",  url: "https://picsum.photos/seed/d2/600/600",  user: "@miamiturbo",   car: "Porsche GT3",         likes: 143, ago: "8h"    },
+    { id: "f9",  url: "https://picsum.photos/seed/d3/600/600",  user: "@305builds",    car: "BMW M4 Competition",  likes: 77,  ago: "1d"    },
+    { id: "f10", url: "https://picsum.photos/seed/d4/600/600",  user: "@carlosriv59",  car: "Nissan 370Z",         likes: 55,  ago: "2d"    },
+  ],
+  p3: [
+    { id: "f11", url: "https://picsum.photos/seed/m1/600/600",  user: "@coralwheels",  car: "Dodge Challenger",    likes: 39,  ago: "1d"    },
+    { id: "f12", url: "https://picsum.photos/seed/m2/600/600",  user: "@jdmmiami",     car: "Mitsubishi Evo IX",   likes: 88,  ago: "2d"    },
+    { id: "f13", url: "https://picsum.photos/seed/m3/600/600",  user: "@southbeachv8", car: "Ford Mustang GT500",  likes: 101, ago: "3d"    },
+  ],
+  p4: [
+    { id: "f14", url: "https://picsum.photos/seed/b1/600/600",  user: "@brickellgt",   car: "Rolls Royce Ghost",   likes: 402, ago: "4h"    },
+    { id: "f15", url: "https://picsum.photos/seed/b2/600/600",  user: "@305builds",    car: "Ferrari SF90",        likes: 510, ago: "6h"    },
+    { id: "f16", url: "https://picsum.photos/seed/b3/600/600",  user: "@designdistrict","car":"Bentley Continental",likes: 287, ago: "12h"   },
+    { id: "f17", url: "https://picsum.photos/seed/b4/600/600",  user: "@miamiturbo",   car: "Aston Martin DB11",   likes: 193, ago: "1d"    },
+    { id: "f18", url: "https://picsum.photos/seed/b5/600/600",  user: "@carlosriv59",  car: "1994 Supra",          likes: 120, ago: "2d"    },
+    { id: "f19", url: "https://picsum.photos/seed/b6/600/600",  user: "@jdmmiami",     car: "Acura NSX",           likes: 98,  ago: "3d"    },
+  ],
+  p5: [
+    { id: "f20", url: "https://picsum.photos/seed/o1/600/600",  user: "@overtownraw",  car: "Honda Civic Type R",  likes: 44,  ago: "6h"    },
+    { id: "f21", url: "https://picsum.photos/seed/o2/600/600",  user: "@305builds",    car: "Subaru WRX STI",      likes: 67,  ago: "1d"    },
+    { id: "f22", url: "https://picsum.photos/seed/o3/600/600",  user: "@coralwheels",  car: "Toyota GR86",         likes: 52,  ago: "2d"    },
+  ],
+}
 
 export const userProfile = {
   name: "Carlos Rivera",
