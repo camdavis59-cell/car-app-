@@ -32,15 +32,14 @@ export default function EventsPage() {
         </div>
       </div>
 
-      <div className="flex no-scroll overflow-x-auto" style={{ borderBottom:"1px solid #2c2c3a" }}>
+      <div className="flex gap-2 no-scroll overflow-x-auto px-4 py-3" style={{ borderBottom:"1px solid #2c2c3a" }}>
         {FILTERS.map(f => {
           const on = filter===f;
           return (
             <button key={f} onClick={() => setFilter(f)}
-              className="px-4 py-3 whitespace-nowrap relative"
-              style={{ fontSize:"10px", fontWeight:700, letterSpacing:"0.12em", color: on?"#fff":"#4a4a5c" }}>
+              className="px-3.5 py-1.5 whitespace-nowrap rounded-sm"
+              style={{ fontSize:"10px", fontWeight:700, letterSpacing:"0.1em", color: on?"#fff":"#4a4a5c", background: on?"#e10600":"#1e1e2a", border:`1px solid ${on?"#e10600":"#2c2c3a"}`, flexShrink:0 }}>
               {f}
-              {on && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background:"#e10600" }} />}
             </button>
           );
         })}

@@ -136,6 +136,11 @@ export default function CarPage() {
           <button onClick={addMod} className="px-4 rounded-sm text-[11px] font-black text-white" style={{ background:"#e10600" }}>ADD</button>
         </div>
 
+        {/* Bottom submit */}
+        <button onClick={save} className="w-full py-3.5 rounded-sm text-[12px] font-black tracking-[0.1em] uppercase text-white flex items-center justify-center gap-2 mb-4" style={{ background:"#e10600" }}>
+          <Check size={14} /> {isNew(id) ? "ADD VEHICLE TO GARAGE" : "SAVE CHANGES"}
+        </button>
+
         {/* Delete */}
         {!isNew(id) && (
           <button onClick={remove} className="w-full py-3 rounded-sm text-[11px] font-black tracking-[0.1em] uppercase flex items-center justify-center gap-2" style={{ background:"transparent", border:"1px solid #e10600", color:"#e10600" }}>

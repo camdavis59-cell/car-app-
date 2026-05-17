@@ -26,7 +26,7 @@ export default function MarketPage() {
             <p style={{ fontSize:"10px", fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", color:"#4a4a5c", marginBottom:"4px" }}>Miami, FL</p>
             <h1 className="text-[22px] font-black text-white tracking-tight">Marketplace</h1>
           </div>
-          <button className="flex items-center gap-1.5 px-3.5 py-2 rounded-sm text-[11px] font-black tracking-[0.08em] uppercase text-white" style={{ background:"#e10600" }}>
+          <button onClick={() => router.push("/market/new")} className="flex items-center gap-1.5 px-3.5 py-2 rounded-sm text-[11px] font-black tracking-[0.08em] uppercase text-white" style={{ background:"#e10600" }}>
             <Plus size={12} strokeWidth={3} /> Sell
           </button>
         </div>

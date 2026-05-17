@@ -10,9 +10,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#0a0a0a] text-white antialiased">
-        <Nav />
-        <main>{children}</main>
+      <body style={{ background: "#000", minHeight: "100dvh", display: "flex", justifyContent: "center" }}>
+        <div style={{ width: "100%", maxWidth: "430px", minHeight: "100dvh", background: "#15151e", position: "relative", display: "flex", flexDirection: "column" }}>
+          <Nav />
+          <main style={{ flex: 1, overflowX: "hidden" }}>{children}</main>
+        </div>
       </body>
     </html>
   );
