@@ -140,10 +140,7 @@ export default function MapClient() {
 
         {active.has("photo") && photoLocations.map(p =>
           <Marker key={p.id} position={[p.lat, p.lng]} icon={photoPin(p.name, p.cover)}
-            eventHandlers={{ click: () => setDetail({
-              name: p.name, desc: p.description, meta: `${p.photos.length} photos`,
-              badge: "PHOTO SPOT", type: "photo", linkTo: `/photo-locations/${p.id}`,
-            }) }} />
+            eventHandlers={{ click: () => router.push(`/photo-locations/${p.id}`) }} />
         )}
 
         {active.has("meetup") && mapPins.meetupSpots.map(p =>
@@ -156,10 +153,7 @@ export default function MapClient() {
 
         {active.has("meetup") && storeEvents.filter(e => e.lat).map(e =>
           <Marker key={`ev-${e.id}`} position={[e.lat, e.lng]} icon={meetupPin(e.title)}
-            eventHandlers={{ click: () => setDetail({
-              name: e.title, desc: e.description, meta: `${e.rsvp} going · ${e.date}`,
-              badge: "EVENT", type: "meetup", linkTo: `/events/${e.id}`,
-            }) }} />
+            eventHandlers={{ click: () => router.push(`/events/${e.id}`) }} />
         )}
 
         {active.has("shop") && mapPins.shops.map(p =>

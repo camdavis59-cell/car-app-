@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
-import { ArrowLeft, MapPin, Tag, MessageSquare, Share } from "lucide-react";
+import { ArrowLeft, MapPin, Tag, MessageSquare, Share, Trash2 } from "lucide-react";
 import Image from "next/image";
 
 const S = {
@@ -12,6 +12,7 @@ export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const listing = useStore(s => s.market.find(l => l.id === id));
+  const deleteListing = useStore(s => s.deleteListing);
 
   if (!listing) return (
     <div style={{ paddingTop:"56px", minHeight:"100dvh", background:"#15151e", display:"flex", alignItems:"center", justifyContent:"center" }}>
@@ -100,6 +101,12 @@ export default function ListingDetailPage() {
         <button style={{ width:"100%", padding:"14px", borderRadius:"4px", background:"transparent", color:"#8888a0", fontSize:"12px", fontWeight:900, letterSpacing:"0.1em", textTransform:"uppercase", border:"1px solid #2c2c3a", cursor:"pointer" }}>
           Make Offer
         </button>
+        {listing.seller === "@carlosriv59" && (
+          <button onClick={() => { deleteListing(id); router.push("/market"); }}
+            style={{ width:"100%", padding:"12px", borderRadius:"4px", background:"transparent", border:"1px solid #e10600", color:"#e10600", fontSize:"11px", fontWeight:900, letterSpacing:"0.1em", textTransform:"uppercase", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
+            <Trash2 size={13} /> Remove Listing
+          </button>
+        )}
       </div>
     </div>
   );
