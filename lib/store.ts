@@ -182,6 +182,7 @@ interface AppState {
 
   // Market
   addListing: (l: MarketListing) => void;
+  deleteListing: (id: string) => void;
 }
 
 const SEED_EVENTS: AppEvent[] = [
@@ -306,6 +307,7 @@ export const useStore = create<AppState>()(
       })),
 
       addListing: (l) => set(s => ({ market: [...s.market, l] })),
+      deleteListing: (id) => set(s => ({ market: s.market.filter(l => l.id !== id) })),
     }),
     { name: "drive59-store" }
   )
