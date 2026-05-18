@@ -19,7 +19,7 @@ export default function MarketPage() {
   );
 
   return (
-    <div className="pt-14 pb-[58px] min-h-screen" style={{ background:"#15151e" }}>
+    <div className="pt-14 pb-20 min-h-screen" style={{ background:"#15151e" }}>
       <div className="px-4 pt-5 pb-4" style={{ borderBottom:"1px solid #2c2c3a" }}>
         <div className="flex items-end justify-between mb-3">
           <div>

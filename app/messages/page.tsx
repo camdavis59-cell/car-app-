@@ -10,7 +10,7 @@ export default function MessagesPage() {
   const SCRIPTED = ["Nice car! 🔥","Let's meet up?","Meet at next gas station?","Headed to the meet?","What mods are those?","Let's go for a drive 🛣️"];
 
   return (
-    <div className="pt-14 pb-[58px] min-h-screen" style={{ background:"#15151e" }}>
+    <div className="pt-14 pb-20 min-h-screen" style={{ background:"#15151e" }}>
       <div className="px-4 pt-5 pb-4" style={{ borderBottom:"1px solid #2c2c3a" }}>
         <div className="flex items-end justify-between mb-3">
           <h1 className="text-[22px] font-black text-white tracking-tight">Messages</h1>

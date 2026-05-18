@@ -34,7 +34,7 @@ export default function EventDetailPage() {
   const filling = pct>=75;
 
   return (
-    <div className="pt-14 pb-[58px] min-h-screen" style={{ background:"#15151e" }}>
+    <div className="pt-14 pb-20 min-h-screen" style={{ background:"#15151e" }}>
       {/* Banner */}
       <div className="relative h-52 overflow-hidden">
         <Image src={ev.banner} alt={ev.title} fill className="object-cover" style={{ opacity:0.6 }} />

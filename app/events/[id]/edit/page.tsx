@@ -27,7 +27,7 @@ export default function EditEventPage() {
   const LABEL: React.CSSProperties = { fontSize:"10px", fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", color:"#4a4a5c", display:"block", marginBottom:"6px" };
 
   return (
-    <div className="pt-14 pb-[58px] min-h-screen" style={{ background:"#15151e" }}>
+    <div className="pt-14 pb-20 min-h-screen" style={{ background:"#15151e" }}>
       <div className="flex items-center gap-3 px-4 py-4" style={{ borderBottom:"1px solid #2c2c3a" }}>
         <button onClick={() => router.back()} className="w-8 h-8 rounded-sm flex items-center justify-center" style={{ background:"#1e1e2a", border:"1px solid #2c2c3a" }}>
           <ArrowLeft size={15} color="#fff" />

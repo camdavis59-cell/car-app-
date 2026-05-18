@@ -24,7 +24,7 @@ export default function PhotoLocationPage() {
   const contributors = new Set(location.photos.map(p=>p.user)).size;
 
   return (
-    <div className="pt-14 pb-[58px] min-h-screen" style={{ background:"#15151e" }}>
+    <div className="pt-14 pb-20 min-h-screen" style={{ background:"#15151e" }}>
       {/* Cover */}
       <div className="relative h-52 overflow-hidden">
         <Image src={location.cover} alt={location.name} fill className="object-cover" style={{ filter:"brightness(0.55)" }} />

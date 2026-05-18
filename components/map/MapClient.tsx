@@ -37,7 +37,7 @@ function photoPin(name: string, cover: string) {
         </div>
         <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #ffffff;margin-top:-2px"></div>
       </div>`,
-    className: "",
+    className: "leaflet-interactive",
     iconSize: [90, 80],
     iconAnchor: [45, 80],
   });
@@ -57,7 +57,7 @@ function meetupPin(name: string) {
         </div>
         <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #e10600;margin-top:-2px"></div>
       </div>`,
-    className: "",
+    className: "leaflet-interactive",
     iconSize: [90, 74],
     iconAnchor: [45, 74],
   });
@@ -67,7 +67,7 @@ function meetupPin(name: string) {
 function dot(color: string) {
   return L.divIcon({
     html: `<div style="width:10px;height:10px;border-radius:50%;background:${color};border:1.5px solid rgba(255,255,255,0.25);box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>`,
-    className: "",
+    className: "leaflet-interactive",
     iconSize: [10, 10],
     iconAnchor: [5, 5],
   });

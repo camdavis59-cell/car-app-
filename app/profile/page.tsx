@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { useStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
-import { Camera, Plus, Pencil, Check, X, ChevronRight, Users, MapPin, Globe, Lock } from "lucide-react";
+import { Camera, Plus, Pencil, Check, X, ChevronRight, MapPin, Globe, Lock } from "lucide-react";
 import Image from "next/image";
 import Field from "@/components/ui/Field";
 
@@ -42,6 +42,7 @@ export default function ProfilePage() {
   const [draft, setDraft] = useState(profile);
   const [joinedClubs, setJoinedClubs] = useState<Set<string>>(new Set());
   const avatarRef = useRef<HTMLInputElement>(null);
+  const bannerRef = useRef<HTMLInputElement>(null);
 
   const rank = getRank(profile.points);
   const nextRank = RANKS[RANKS.findIndex(r => r.name === rank.name) + 1];
@@ -52,6 +53,11 @@ export default function ProfilePage() {
     updateProfile({ avatar: URL.createObjectURL(f) });
   }
 
+  function handleBanner(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0]; if (!f) return;
+    updateProfile({ banner: URL.createObjectURL(f) });
+  }
+
   function save() { updateProfile(draft); setEditing(false); }
 
   function toggleClub(id: string) {
@@ -59,10 +65,14 @@ export default function ProfilePage() {
   }
 
   return (
-    <div style={{ paddingTop:"56px", paddingBottom:"70px", minHeight:"100dvh", background:"#15151e" }}>
+    <div style={{ paddingTop:"56px", paddingBottom:"80px", minHeight:"100dvh", background:"#15151e" }}>
       {/* Banner */}
       <div style={{ height:"120px", background:"linear-gradient(135deg,#200808 0%,#100505 50%,#0d0d14 100%)", position:"relative", overflow:"hidden" }}>
-        <Image src="https://picsum.photos/seed/profilebanner/800/300" alt="" fill style={{ objectFit:"cover", opacity:0.18 }} />
+        <Image src={profile.banner || "https://picsum.photos/seed/profilebanner/800/300"} alt="" fill style={{ objectFit:"cover", opacity: profile.banner ? 0.7 : 0.18 }} />
+        <button onClick={() => bannerRef.current?.click()} style={{ position:"absolute", top:"10px", right:"10px", display:"flex", alignItems:"center", gap:"5px", padding:"6px 10px", borderRadius:"3px", background:"rgba(21,21,30,0.85)", border:"1px solid rgba(255,255,255,0.15)", color:"#fff", fontSize:"10px", fontWeight:700, cursor:"pointer" }}>
+          <Camera size={11} /> Edit Cover
+        </button>
+        <input ref={bannerRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleBanner} />
       </div>
 
       <div style={{ padding:"0 16px", borderBottom:"1px solid #2c2c3a" }}>

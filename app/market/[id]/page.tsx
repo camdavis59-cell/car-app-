@@ -27,7 +27,7 @@ export default function ListingDetailPage() {
   };
 
   return (
-    <div style={{ paddingTop:"56px", paddingBottom:"70px", minHeight:"100dvh", background:"#15151e" }}>
+    <div style={{ paddingTop:"56px", paddingBottom:"80px", minHeight:"100dvh", background:"#15151e" }}>
       {/* Header */}
       <div style={{ display:"flex", alignItems:"center", gap:"12px", padding:"16px", borderBottom:"1px solid #2c2c3a" }}>
         <button onClick={() => router.back()} style={{ width:"32px", height:"32px", borderRadius:"3px", display:"flex", alignItems:"center", justifyContent:"center", background:"#1e1e2a", border:"1px solid #2c2c3a", cursor:"pointer" }}>

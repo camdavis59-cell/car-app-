@@ -30,7 +30,7 @@ export default function ClubDetailPage() {
   const set = (k: string, v: string | boolean) => setDraft((d:any) => d ? { ...d, [k]: v } : d);
 
   return (
-    <div className="pt-14 pb-[58px] min-h-screen" style={{ background:"#15151e" }}>
+    <div className="pt-14 pb-20 min-h-screen" style={{ background:"#15151e" }}>
       {/* Banner */}
       <div className="relative h-52 overflow-hidden">
         <Image src={editing ? draft.banner : club.banner} alt={club.name} fill className="object-cover" style={{ opacity:0.6 }} />

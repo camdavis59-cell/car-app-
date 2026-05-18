@@ -100,6 +100,7 @@ export interface UserProfile {
   points: number;
   bio: string;
   avatar: string;
+  banner: string;
   eventsAttended: number;
   photosUploaded: number;
   following: number;
@@ -270,7 +271,7 @@ export const useStore = create<AppState>()(
       conversations: SEED_CONVERSATIONS,
       market: SEED_MARKET,
       rsvpdEvents: [],
-      profile: { name: "Carlos Rivera", handle: "@carlosriv59", location: "Miami, FL", points: 2840, bio: "Miami native. JDM obsessed. Building the Supra one mod at a time. Drive 59 co-founder.", avatar: "", eventsAttended: 12, photosUploaded: 34, following: 89, followers: 203 },
+      profile: { name: "Carlos Rivera", handle: "@carlosriv59", location: "Miami, FL", points: 2840, bio: "Miami native. JDM obsessed. Building the Supra one mod at a time. Drive 59 co-founder.", avatar: "", banner: "https://picsum.photos/seed/profilebanner/800/300", eventsAttended: 12, photosUploaded: 34, following: 89, followers: 203 },
 
       addEvent: (e) => set(s => ({ events: [...s.events, e] })),
       updateEvent: (id, data) => set(s => ({ events: s.events.map(e => e.id === id ? { ...e, ...data } : e) })),
