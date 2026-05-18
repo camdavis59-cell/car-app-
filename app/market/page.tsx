@@ -73,7 +73,7 @@ export default function MarketPage() {
                   <span style={{ fontSize:"10px", color:"#4a4a5c" }}>{item.location}</span>
                 </div>
               </div>
-              <button className="mt-2 w-full py-2 rounded-sm text-[10px] font-black tracking-wide uppercase text-white" style={{ background:"#e10600" }}>View</button>
+              <button onClick={() => router.push(`/market/${item.id}`)} className="mt-2 w-full py-2 rounded-sm text-[10px] font-black tracking-wide uppercase text-white" style={{ background:"#e10600" }}>View</button>
             </div>
           </div>
         ))}

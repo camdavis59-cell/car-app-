@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { useStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
-import { Camera, Plus, Pencil, Check, X, ChevronRight, Zap, Trophy, Users, Image as ImageIcon } from "lucide-react";
+import { Camera, Plus, Pencil, Check, X, ChevronRight, Users, MapPin, Globe, Lock } from "lucide-react";
 import Image from "next/image";
 import Field from "@/components/ui/Field";
 
@@ -27,12 +27,20 @@ const ACTIVITY = [
   { cat: "EVENT",  text: "Attended JDM Only — Hialeah",               time: "2 weeks ago",pts: 100 },
 ];
 
+const TABS = [
+  { key: "garage",   label: "GARAGE"   },
+  { key: "clubs",    label: "CLUBS"    },
+  { key: "msgs",     label: "MSGS"     },
+  { key: "activity", label: "ACTIVITY" },
+] as const;
+
 export default function ProfilePage() {
   const router = useRouter();
-  const { profile, garage, updateProfile } = useStore();
-  const [tab, setTab] = useState<"garage"|"activity">("garage");
+  const { profile, garage, clubs, conversations, updateProfile } = useStore();
+  const [tab, setTab] = useState<"garage"|"clubs"|"msgs"|"activity">("garage");
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(profile);
+  const [joinedClubs, setJoinedClubs] = useState<Set<string>>(new Set());
   const avatarRef = useRef<HTMLInputElement>(null);
 
   const rank = getRank(profile.points);
@@ -45,6 +53,10 @@ export default function ProfilePage() {
   }
 
   function save() { updateProfile(draft); setEditing(false); }
+
+  function toggleClub(id: string) {
+    setJoinedClubs(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  }
 
   return (
     <div style={{ paddingTop:"56px", paddingBottom:"70px", minHeight:"100dvh", background:"#15151e" }}>
@@ -60,7 +72,7 @@ export default function ProfilePage() {
             <div style={{ width:"60px", height:"60px", borderRadius:"6px", border:"3px solid #15151e", background:"#e10600", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"18px", fontWeight:900, color:"#fff", overflow:"hidden", flexShrink:0 }}>
               {profile.avatar ? <Image src={profile.avatar} alt="avatar" fill style={{ objectFit:"cover" }} /> : profile.name.split(" ").map(n=>n[0]).join("").slice(0,2)}
             </div>
-            <button onClick={() => avatarRef.current?.click()} style={{ position:"absolute", bottom:"-4px", right:"-4px", width:"20px", height:"20px", borderRadius:"50%", background:"#e10600", border:"2px solid #15151e", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <button onClick={() => avatarRef.current?.click()} style={{ position:"absolute", bottom:"-4px", right:"-4px", width:"20px", height:"20px", borderRadius:"50%", background:"#e10600", border:"2px solid #15151e", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}>
               <Camera size={9} color="#fff" />
             </button>
             <input ref={avatarRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleAvatar} />
@@ -127,16 +139,17 @@ export default function ProfilePage() {
 
       {/* Tabs */}
       <div style={{ display:"flex", borderBottom:"1px solid #2c2c3a" }}>
-        {(["garage","activity"] as const).map(t=>(
-          <button key={t} onClick={()=>setTab(t)} style={{ flex:1, padding:"14px 0", fontSize:"10px", fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", color:tab===t?"#fff":"#4a4a5c", background:"transparent", border:"none", borderBottom:`2px solid ${tab===t?"#e10600":"transparent"}`, cursor:"pointer", position:"relative" }}>
-            {t==="garage"?"MY GARAGE":"ACTIVITY"}
+        {TABS.map(t => (
+          <button key={t.key} onClick={()=>setTab(t.key)} style={{ flex:1, padding:"13px 0", fontSize:"9px", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:tab===t.key?"#fff":"#4a4a5c", background:"transparent", border:"none", borderBottom:`2px solid ${tab===t.key?"#e10600":"transparent"}`, cursor:"pointer" }}>
+            {t.label}
           </button>
         ))}
       </div>
 
+      {/* GARAGE TAB */}
       {tab==="garage" && (
         <div>
-          {garage.map((car,i)=>(
+          {garage.map((car)=>(
             <button key={car.id} onClick={()=>router.push(`/garage/${car.id}`)} style={{ width:"100%", display:"flex", alignItems:"center", gap:"12px", padding:"14px 16px", background:"transparent", border:"none", borderBottom:"1px solid #1e1e2a", cursor:"pointer", textAlign:"left", position:"relative" }}>
               <div style={{ position:"absolute", left:0, top:"12px", bottom:"12px", width:"2px", background:"#e10600" }} />
               <div style={{ width:"72px", height:"52px", borderRadius:"4px", overflow:"hidden", flexShrink:0, border:"1px solid #2c2c3a", position:"relative" }}>
@@ -156,6 +169,76 @@ export default function ProfilePage() {
         </div>
       )}
 
+      {/* CLUBS TAB */}
+      {tab==="clubs" && (
+        <div>
+          {clubs.map((club, i) => {
+            const isMember = joinedClubs.has(club.id);
+            return (
+              <div key={club.id} style={{ borderBottom: i < clubs.length-1 ? "1px solid #1e1e2a" : "none", position:"relative" }}>
+                <div style={{ position:"absolute", left:0, top:0, bottom:0, width:"2px", background: isMember ? "#e10600" : "#2c2c3a" }} />
+                <div style={{ height:"50px", position:"relative", overflow:"hidden", background:"#1e1e2a" }}>
+                  <Image src={club.banner} alt={club.name} fill style={{ objectFit:"cover", opacity:0.55 }} />
+                </div>
+                <div style={{ padding:"12px 16px 14px 18px" }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:"8px", marginBottom:"6px" }}>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <p style={{ ...S.label, marginBottom:"3px" }}>{club.type}</p>
+                      <p style={{ fontSize:"15px", fontWeight:900, color:"#fff" }}>{club.name}</p>
+                    </div>
+                    <div style={{ textAlign:"right", flexShrink:0 }}>
+                      <p style={{ fontSize:"18px", fontWeight:900, color:"#fff", lineHeight:1 }}>{club.members + (isMember ? 1 : 0)}</p>
+                      <p style={{ ...S.label, fontSize:"9px" }}>MEMBERS</p>
+                    </div>
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", gap:"8px", marginBottom:"3px" }}>
+                    <MapPin size={10} color="#4a4a5c" />
+                    <span style={{ fontSize:"11px", color:"#4a4a5c" }}>{club.location}</span>
+                    {club.public ? <Globe size={10} color="#4a4a5c" /> : <Lock size={10} color="#4a4a5c" />}
+                    <span style={{ fontSize:"11px", color:"#4a4a5c" }}>{club.public ? "Public" : "Private"}</span>
+                  </div>
+                  <div style={{ display:"flex", gap:"8px", marginTop:"10px" }}>
+                    <button onClick={() => toggleClub(club.id)} style={{ flex:1, padding:"9px 0", borderRadius:"3px", fontSize:"11px", fontWeight:900, letterSpacing:"0.08em", textTransform:"uppercase", background: isMember ? "transparent" : "#e10600", color: isMember ? "#e10600" : "#fff", border: isMember ? "1px solid #e10600" : "1px solid transparent", cursor:"pointer" }}>
+                      {isMember ? "✓  Member" : "Join Club"}
+                    </button>
+                    <button onClick={() => router.push(`/clubs/${club.id}`)} style={{ padding:"9px 12px", borderRadius:"3px", background:"#1e1e2a", border:"1px solid #2c2c3a", display:"flex", alignItems:"center", cursor:"pointer" }}>
+                      <ChevronRight size={15} color="#8888a0" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* MESSAGES TAB */}
+      {tab==="msgs" && (
+        <div>
+          {conversations.map((conv, i) => {
+            const last = conv.messages[conv.messages.length - 1];
+            return (
+              <button key={conv.id} onClick={() => router.push(`/messages/${conv.id}`)}
+                style={{ width:"100%", display:"flex", alignItems:"center", gap:"12px", padding:"14px 16px", background:"transparent", border:"none", borderBottom: i < conversations.length-1 ? "1px solid #1e1e2a" : "none", cursor:"pointer", textAlign:"left" }}>
+                <div style={{ width:"40px", height:"40px", borderRadius:"4px", background:"#e10600", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"13px", fontWeight:900, color:"#fff", flexShrink:0 }}>
+                  {conv.avatar}
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:"8px", marginBottom:"2px" }}>
+                    <p style={{ fontSize:"13px", fontWeight:900, color:"#fff", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{conv.with}</p>
+                    <span style={{ fontSize:"10px", color:"#4a4a5c", flexShrink:0 }}>{conv.lastSeen}</span>
+                  </div>
+                  <p style={{ fontSize:"11px", color:"#4a4a5c", marginBottom:"3px" }}>{conv.handle} · {conv.car}</p>
+                  <p style={{ fontSize:"12px", color:"#8888a0", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{last?.text}</p>
+                </div>
+                <ChevronRight size={15} color="#4a4a5c" />
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ACTIVITY TAB */}
       {tab==="activity" && (
         <div>
           {ACTIVITY.map((a,i)=>(

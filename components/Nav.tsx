@@ -9,8 +9,10 @@ const NAV = [
   { href: "/events",   label: "EVENTS",   icon: CalendarDays },
   { href: "/rally",    label: "RALLY",    icon: Flag         },
   { href: "/market",   label: "MARKET",   icon: ShoppingBag  },
-  { href: "/profile",  label: "GARAGE",   icon: User         },
+  { href: "/profile",  label: "PROFILE",  icon: User         },
 ];
+
+const PROFILE_PATHS = ["/profile", "/garage", "/clubs", "/messages"];
 
 export default function Nav() {
   const path = usePathname();
@@ -48,7 +50,9 @@ export default function Nav() {
       <nav className="fixed bottom-0 inset-x-0 z-50 h-[58px] flex"
         style={{ background: "rgba(21,21,30,0.97)", borderTop: "1px solid #2c2c3a", backdropFilter: "blur(12px)" }}>
         {NAV.map(({ href, label, icon: Icon }) => {
-          const on = path === href || (href !== "/" && path.startsWith(href));
+          const on = path === href ||
+            (href !== "/" && href !== "/profile" && path.startsWith(href)) ||
+            (href === "/profile" && PROFILE_PATHS.some(p => path === p || path.startsWith(p + "/")));
           return (
             <Link key={href} href={href} className="flex-1 flex flex-col items-center justify-center gap-1 relative">
               <Icon size={17} strokeWidth={on ? 2.5 : 1.8} style={{ color: on ? "#e10600" : "#4a4a5c" }} />

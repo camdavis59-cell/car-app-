@@ -213,7 +213,7 @@ export default function MapClient() {
               <button onClick={() => { setDetail(null); router.push(detail.linkTo!); }}
                 className="mt-4 w-full py-3 rounded-sm text-[12px] font-black tracking-[0.1em] uppercase flex items-center justify-center gap-1.5 text-white"
                 style={{ background: "#e10600" }}>
-                View Photos <ChevronRight size={13} strokeWidth={3} />
+                {detail.linkTo.startsWith("/events") ? "View Event" : "View Photos"} <ChevronRight size={13} strokeWidth={3} />
               </button>
             ) : (
               <button className="mt-4 w-full py-3 rounded-sm text-[12px] font-black tracking-[0.1em] uppercase flex items-center justify-center gap-1.5 text-white"
