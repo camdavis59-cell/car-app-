@@ -2,22 +2,35 @@
 import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MapPin, Loader } from "lucide-react";
 import Field from "@/components/ui/Field";
+import { geocode } from "@/lib/geocode";
 
 export default function NewEventPage() {
   const router = useRouter();
   const { addEvent } = useStore();
-  const [form, setForm] = useState({ title:"", date:"", time:"7:00 PM", location:"", lat:"25.7617", lng:"-80.1918", type:"meetup", max:"100", description:"", rules:"", attire:"Casual", vehicleTypes:"All welcome", tags:"", banner:"https://picsum.photos/seed/new1/800/200", sponsor:"", private:false, sponsored:false });
+  const [form, setForm] = useState({ title:"", date:"", time:"7:00 PM", location:"", type:"meetup", max:"100", description:"", rules:"", attire:"Casual", vehicleTypes:"All welcome", tags:"", banner:"https://picsum.photos/seed/new1/800/200", sponsor:"", private:false, sponsored:false });
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoStatus, setGeoStatus] = useState<"idle"|"loading"|"found"|"failed">("idle");
 
   const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }));
 
+  async function handleLocationBlur() {
+    if (!form.location.trim()) return;
+    setGeoStatus("loading");
+    const result = await geocode(form.location);
+    if (result) { setCoords(result); setGeoStatus("found"); }
+    else { setGeoStatus("failed"); }
+  }
+
   function submit() {
     if (!form.title || !form.date) return;
+    const lat = coords?.lat ?? 25.7617;
+    const lng = coords?.lng ?? -80.1918;
     addEvent({
       id: Date.now().toString(),
       title: form.title, date: form.date, time: form.time,
-      location: form.location, lat: parseFloat(form.lat)||25.7617, lng: parseFloat(form.lng)||-80.1918,
+      location: form.location, lat, lng,
       type: form.type, rsvp: 0, max: parseInt(form.max)||100,
       organizer: "carlosriv59", banner: form.banner,
       tags: form.tags.split(",").map(t=>t.trim()).filter(Boolean),
@@ -49,11 +62,27 @@ export default function NewEventPage() {
           <Field label="Date" value={form.date} onChange={v=>set("date",v)} type="date" />
           <Field label="Time" value={form.time} onChange={v=>set("time",v)} placeholder="7:00 PM" />
         </div>
-        <Field label="Location" value={form.location} onChange={v=>set("location",v)} placeholder="Wynwood Walls, Miami" />
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Latitude" value={form.lat} onChange={v=>set("lat",v)} placeholder="25.7617" />
-          <Field label="Longitude" value={form.lng} onChange={v=>set("lng",v)} placeholder="-80.1918" />
-        </div>
+
+        {/* Location with geocode */}
+        <Field label="Location" value={form.location} onChange={v=>{ set("location",v); setGeoStatus("idle"); setCoords(null); }} onBlur={handleLocationBlur} placeholder="Wynwood Walls, Miami" />
+        {geoStatus === "loading" && (
+          <div style={{ display:"flex", alignItems:"center", gap:"6px", marginTop:"-10px", marginBottom:"16px" }}>
+            <Loader size={11} color="#4a4a5c" className="animate-spin" />
+            <span style={{ fontSize:"11px", color:"#4a4a5c" }}>Finding location…</span>
+          </div>
+        )}
+        {geoStatus === "found" && coords && (
+          <div style={{ display:"flex", alignItems:"center", gap:"6px", marginTop:"-10px", marginBottom:"16px" }}>
+            <MapPin size={11} color="#00d2be" />
+            <span style={{ fontSize:"11px", color:"#00d2be" }}>Located · {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}</span>
+          </div>
+        )}
+        {geoStatus === "failed" && (
+          <div style={{ display:"flex", alignItems:"center", gap:"6px", marginTop:"-10px", marginBottom:"16px" }}>
+            <MapPin size={11} color="#f59e0b" />
+            <span style={{ fontSize:"11px", color:"#f59e0b" }}>Location not found — will default to Miami center</span>
+          </div>
+        )}
 
         <label style={LABEL}>Event Type</label>
         <select value={form.type} onChange={e=>set("type",e.target.value)} style={SELECT}>
@@ -68,7 +97,6 @@ export default function NewEventPage() {
         <Field label="Tags (comma separated)" value={form.tags} onChange={v=>set("tags",v)} placeholder="JDM, photography, cruise" />
         <Field label="Banner Image URL" value={form.banner} onChange={v=>set("banner",v)} placeholder="https://…" />
 
-        {/* Toggles */}
         <div className="flex items-center justify-between py-3 mb-2" style={{ borderTop:"1px solid #1e1e2a" }}>
           <div>
             <p className="text-[13px] font-bold text-white">Private Event</p>

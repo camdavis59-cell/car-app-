@@ -4,12 +4,13 @@ interface FieldProps {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   multiline?: boolean;
   type?: string;
 }
 
-export default function Field({ label, value, onChange, placeholder, multiline, type = "text" }: FieldProps) {
+export default function Field({ label, value, onChange, onBlur, placeholder, multiline, type = "text" }: FieldProps) {
   const base: React.CSSProperties = {
     width: "100%", background: "#1e1e2a", border: "1px solid #2c2c3a",
     borderRadius: "3px", color: "#fff", fontSize: "13px", padding: "10px 12px",
@@ -21,8 +22,8 @@ export default function Field({ label, value, onChange, placeholder, multiline, 
         {label}
       </p>
       {multiline
-        ? <textarea rows={3} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={{ ...base, resize: "vertical" }} />
-        : <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={base} />
+        ? <textarea rows={3} value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} placeholder={placeholder} style={{ ...base, resize: "vertical" }} />
+        : <input type={type} value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} placeholder={placeholder} style={base} />
       }
     </div>
   );

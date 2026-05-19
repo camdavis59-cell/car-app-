@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MapPin, Loader } from "lucide-react";
 import Field from "@/components/ui/Field";
+import { geocode } from "@/lib/geocode";
 
 const LABEL: React.CSSProperties = { fontSize:"10px", fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase" as const, color:"#4a4a5c", display:"block", marginBottom:"6px" };
 const SELECT: React.CSSProperties = { width:"100%", background:"#1e1e2a", border:"1px solid #2c2c3a", borderRadius:"3px", color:"#fff", fontSize:"13px", padding:"10px 12px", outline:"none", fontFamily:"inherit", marginBottom:"16px" };
@@ -18,8 +19,18 @@ export default function NewRallyPage() {
     banner: "https://picsum.photos/seed/rally-new/800/300",
     fundraiser: false, goal: "5000",
   });
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoStatus, setGeoStatus] = useState<"idle"|"loading"|"found"|"failed">("idle");
 
   const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }));
+
+  async function handleStartBlur() {
+    if (!form.startLocation.trim()) return;
+    setGeoStatus("loading");
+    const result = await geocode(form.startLocation);
+    if (result) { setCoords(result); setGeoStatus("found"); }
+    else { setGeoStatus("failed"); }
+  }
 
   function submit() {
     if (!form.name || !form.date || !form.startLocation || !form.endLocation) return;
@@ -58,14 +69,34 @@ export default function NewRallyPage() {
       <div style={{ padding:"20px 16px" }}>
         <Field label="Rally Name" value={form.name} onChange={v => set("name", v)} placeholder="Keys Run 2026" />
         <Field label="Date" value={form.date} onChange={v => set("date", v)} type="date" />
-        <Field label="Start Location" value={form.startLocation} onChange={v => set("startLocation", v)} placeholder="Bayfront Park, Miami" />
+
+        {/* Start location with geocode */}
+        <Field label="Start Location" value={form.startLocation} onChange={v=>{ set("startLocation",v); setGeoStatus("idle"); setCoords(null); }} onBlur={handleStartBlur} placeholder="Bayfront Park, Miami" />
+        {geoStatus === "loading" && (
+          <div style={{ display:"flex", alignItems:"center", gap:"6px", marginTop:"-10px", marginBottom:"16px" }}>
+            <Loader size={11} color="#4a4a5c" />
+            <span style={{ fontSize:"11px", color:"#4a4a5c" }}>Finding location…</span>
+          </div>
+        )}
+        {geoStatus === "found" && coords && (
+          <div style={{ display:"flex", alignItems:"center", gap:"6px", marginTop:"-10px", marginBottom:"16px" }}>
+            <MapPin size={11} color="#00d2be" />
+            <span style={{ fontSize:"11px", color:"#00d2be" }}>Located · {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}</span>
+          </div>
+        )}
+        {geoStatus === "failed" && (
+          <div style={{ display:"flex", alignItems:"center", gap:"6px", marginTop:"-10px", marginBottom:"16px" }}>
+            <MapPin size={11} color="#f59e0b" />
+            <span style={{ fontSize:"11px", color:"#f59e0b" }}>Location not found — pin will default to Miami</span>
+          </div>
+        )}
+
         <Field label="End Location" value={form.endLocation} onChange={v => set("endLocation", v)} placeholder="Key West, FL" />
         <Field label="Stops (comma separated)" value={form.stops} onChange={v => set("stops", v)} placeholder="Key Largo, Islamorada, Marathon" />
         <Field label="Description" value={form.description} onChange={v => set("description", v)} multiline placeholder="Describe the route, vibe, and purpose of this rally…" />
         <Field label="Max Cars" value={form.maxCars} onChange={v => set("maxCars", v)} type="number" />
         <Field label="Banner Image URL" value={form.banner} onChange={v => set("banner", v)} placeholder="https://picsum.photos/seed/…" />
 
-        {/* Fundraiser toggle */}
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 0", borderTop:"1px solid #1e1e2a", marginBottom: form.fundraiser ? "0" : "24px" }}>
           <div>
             <p style={{ fontSize:"13px", fontWeight:700, color:"#fff" }}>Fundraiser Rally</p>
