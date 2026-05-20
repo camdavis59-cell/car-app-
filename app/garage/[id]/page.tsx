@@ -5,6 +5,7 @@ import { useStore } from "@/lib/store";
 import { ArrowLeft, Pencil, Trash2, Check, X, Camera, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Field from "@/components/ui/Field";
+import { fileToDataUrl } from "@/lib/utils";
 
 const MAX_PHOTOS = 6;
 
@@ -35,10 +36,10 @@ export default function CarPage() {
 
   function removeMod(i: number) { setCar(c => ({ ...c, mods: c.mods.filter((_,idx) => idx !== i) })); }
 
-  function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]; if (!f) return;
     if (car.photos.length >= MAX_PHOTOS) return;
-    const url = URL.createObjectURL(f);
+    const url = await fileToDataUrl(f, 800);
     setCar(c => ({ ...c, photos: [...c.photos, url] }));
     e.target.value = "";
   }
@@ -94,7 +95,7 @@ export default function CarPage() {
         <div style={{ position:"relative", width:"100%", aspectRatio:"16/9", background:"#1e1e2a" }}>
           {photos.length > 0 ? (
             <>
-              <Image src={photos[photoIdx]} alt="car" fill style={{ objectFit:"cover" }} unoptimized={photos[photoIdx].startsWith("blob:")} />
+              <Image src={photos[photoIdx]} alt="car" fill style={{ objectFit:"cover" }} unoptimized={!photos[photoIdx].startsWith("http")} />
               {photos.length > 1 && (
                 <>
                   <button onClick={() => setPhotoIdx(i => (i - 1 + photos.length) % photos.length)}
@@ -199,7 +200,7 @@ export default function CarPage() {
               <div key={i} style={{ position:"relative", aspectRatio:"4/3", borderRadius:"4px", overflow:"hidden", background:"#1e1e2a", border:`1px ${photo?"solid":"dashed"} #2c2c3a` }}>
                 {photo ? (
                   <>
-                    <Image src={photo} alt="car" fill style={{ objectFit:"cover" }} unoptimized={photo.startsWith("blob:")} />
+                    <Image src={photo} alt="car" fill style={{ objectFit:"cover" }} unoptimized={!photo.startsWith("http")} />
                     <button onClick={() => removePhoto(i)} style={{ position:"absolute", top:"4px", right:"4px", width:"20px", height:"20px", borderRadius:"50%", background:"rgba(21,21,30,0.9)", border:"1px solid #2c2c3a", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}>
                       <X size={10} color="#fff" />
                     </button>

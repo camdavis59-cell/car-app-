@@ -2,7 +2,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useStore } from "@/lib/store";
-import { ArrowLeft, Mic, MicOff, AlertTriangle, Coffee, Navigation, SkipForward, Bath, Car, ChevronRight, Flag, Zap } from "lucide-react";
+import { ArrowLeft, Mic, MicOff, AlertTriangle, Coffee, Navigation, SkipForward, Bath, ChevronRight, Flag, Zap, Pencil } from "lucide-react";
 import Image from "next/image";
 
 const CAR_COLORS = ["#e10600","#3b82f6","#22c55e","#f59e0b","#a855f7","#06b6d4"];
@@ -49,11 +49,18 @@ export default function RallyDetailPage() {
           <p style={{ fontSize:"10px", fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", color:"#4a4a5c" }}>RALLY · ACTIVE</p>
           <h1 className="text-[15px] font-black text-white truncate">{rally.name}</h1>
         </div>
-        <button onClick={() => setWalkie(w => !w)}
-          className="w-9 h-9 rounded-sm flex items-center justify-center"
-          style={{ background: walkie ? "#e10600" : "#1e1e2a", border:`1px solid ${walkie?"#e10600":"#2c2c3a"}` }}>
-          {walkie ? <Mic size={16} color="#fff" /> : <MicOff size={16} style={{ color:"#4a4a5c" }} />}
-        </button>
+        <div style={{ display:"flex", gap:"8px" }}>
+          <button onClick={() => router.push(`/rally/${id}/edit`)}
+            className="w-9 h-9 rounded-sm flex items-center justify-center"
+            style={{ background:"#1e1e2a", border:"1px solid #2c2c3a" }}>
+            <Pencil size={14} color="#8888a0" />
+          </button>
+          <button onClick={() => setWalkie(w => !w)}
+            className="w-9 h-9 rounded-sm flex items-center justify-center"
+            style={{ background: walkie ? "#e10600" : "#1e1e2a", border:`1px solid ${walkie?"#e10600":"#2c2c3a"}` }}>
+            {walkie ? <Mic size={16} color="#fff" /> : <MicOff size={16} style={{ color:"#4a4a5c" }} />}
+          </button>
+        </div>
       </div>
 
       {/* Live map placeholder */}

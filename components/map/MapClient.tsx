@@ -5,8 +5,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { mapPins } from "@/lib/mockData";
 import { useStore } from "@/lib/store";
-import { Plus } from "lucide-react";
-import { X, ChevronRight, Navigation } from "lucide-react";
+import { Plus, X, ChevronRight, Navigation, Camera, CalendarDays, Store } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type FilterKey = "photo" | "meetup" | "shop" | "scenic" | "partner";
@@ -86,6 +85,7 @@ export default function MapClient() {
   const [active, setActive] = useState<Set<FilterKey>>(new Set(["photo", "meetup", "shop", "partner"]));
   const [detail, setDetail] = useState<Detail | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
   const router = useRouter();
   const { photoLocations, events: storeEvents } = useStore();
 
@@ -124,13 +124,37 @@ export default function MapClient() {
         })}
       </div>
 
-      {/* Compass + add photo location */}
+      {/* Compass + FAB */}
       <div className="absolute top-14 right-3 z-[1000] flex flex-col gap-2">
         <button className="w-8 h-8 rounded-sm flex items-center justify-center" style={{ background: "rgba(30,30,42,0.9)", border: "1px solid #2c2c3a" }}>
           <Navigation size={13} style={{ color: "#4a4a5c" }} />
         </button>
-        <button onClick={() => router.push("/photo-locations/new")} className="w-8 h-8 rounded-sm flex items-center justify-center" style={{ background: "#e10600" }}>
-          <Plus size={14} style={{ color: "#fff" }} />
+        {fabOpen && (
+          <>
+            <button onClick={() => { setFabOpen(false); router.push("/photo-locations/new"); }}
+              className="w-8 h-8 rounded-sm flex items-center justify-center"
+              style={{ background: "rgba(30,30,42,0.95)", border: "1px solid #2c2c3a" }} title="Add Photo Spot">
+              <Camera size={13} style={{ color: "#fff" }} />
+            </button>
+            <button onClick={() => { setFabOpen(false); router.push("/events/new"); }}
+              className="w-8 h-8 rounded-sm flex items-center justify-center"
+              style={{ background: "rgba(30,30,42,0.95)", border: "1px solid #2c2c3a" }} title="Add Event">
+              <CalendarDays size={13} style={{ color: "#fff" }} />
+            </button>
+            <button onClick={() => { setFabOpen(false); router.push("/market/new"); }}
+              className="w-8 h-8 rounded-sm flex items-center justify-center"
+              style={{ background: "rgba(30,30,42,0.95)", border: "1px solid #2c2c3a" }} title="Add Business / Listing">
+              <Store size={13} style={{ color: "#fff" }} />
+            </button>
+          </>
+        )}
+        <button onClick={() => setFabOpen(v => !v)}
+          className="w-8 h-8 rounded-sm flex items-center justify-center"
+          style={{ background: fabOpen ? "#2c2c3a" : "#e10600", transition: "background 0.15s" }}>
+          {fabOpen
+            ? <X size={14} style={{ color: "#fff" }} />
+            : <Plus size={14} style={{ color: "#fff" }} />
+          }
         </button>
       </div>
 

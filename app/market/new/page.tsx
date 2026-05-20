@@ -5,6 +5,7 @@ import { useStore } from "@/lib/store";
 import { ArrowLeft, Camera } from "lucide-react";
 import Image from "next/image";
 import Field from "@/components/ui/Field";
+import { fileToDataUrl } from "@/lib/utils";
 
 const CATS = ["EXHAUST","WHEELS","SUSPENSION","BRAKES","COOLING","INTERIOR","TIRES","ENGINE","OTHER"];
 const CONDITIONS = ["New","Like New","Good","Fair","For Parts"];
@@ -24,9 +25,9 @@ export default function NewListingPage() {
   });
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
-  function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]; if (!f) return;
-    set("image", URL.createObjectURL(f));
+    set("image", await fileToDataUrl(f));
   }
 
   function submit() {
