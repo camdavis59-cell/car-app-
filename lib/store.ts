@@ -242,6 +242,9 @@ const SEED_PHOTO_LOCATIONS: PhotoLocation[] = [
     { id: "f19", url: "https://loremflickr.com/600/600/ford,mustang,highland?lock=419", user: "@camdavis59", car: "2019 Mustang Bullitt", likes: 156, ago: "2d" },
     { id: "f20", url: "https://loremflickr.com/600/600/acura,nsx,sports?lock=420", user: "@jdmmiami", car: "Acura NSX", likes: 98, ago: "3d" },
   ]},
+  { id: "p5", lat: 25.7284, lng: -80.2378, name: "Regatta Parking Garage", description: "Rooftop level — Miami skyline at sunset, perfect golden hour shots", cover: "https://loremflickr.com/600/400/parking,garage,miami,sunset?lock=305", photos: [
+    { id: "f21", url: "https://loremflickr.com/600/600/ford,mustang,green,sunset?lock=421", user: "@camdavis59", car: "2019 Mustang Bullitt", likes: 0, ago: "Just now" },
+  ]},
 ];
 
 const SEED_BUSINESSES: Business[] = [
@@ -341,6 +344,6 @@ export const useStore = create<AppState>()(
       addListing: (l) => set(s => ({ market: [...s.market, l] })),
       deleteListing: (id) => set(s => ({ market: s.market.filter(l => l.id !== id) })),
     }),
-    { name: "drive59-store-v2" }
+    { name: "drive59-store-v3" }
   )
 );
