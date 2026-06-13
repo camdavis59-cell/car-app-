@@ -8,7 +8,7 @@ import Image from "next/image";
 export default function ClubsPage() {
   const { clubs } = useStore();
   const router = useRouter();
-  const [joined, setJoined] = useState<Set<string>>(new Set());
+  const [joined, setJoined] = useState<Set<string>>(new Set(["c5","c6"]));
   const toggle = (id:string) => setJoined(p => { const n=new Set(p); n.has(id)?n.delete(id):n.add(id); return n; });
 
   return (

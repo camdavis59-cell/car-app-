@@ -101,7 +101,7 @@ export default function ListingDetailPage() {
         <button style={{ width:"100%", padding:"14px", borderRadius:"4px", background:"transparent", color:"#8888a0", fontSize:"12px", fontWeight:900, letterSpacing:"0.1em", textTransform:"uppercase", border:"1px solid #2c2c3a", cursor:"pointer" }}>
           Make Offer
         </button>
-        {listing.seller === "@carlosriv59" && (
+        {listing.seller === "@camdavis59" && (
           <button onClick={() => { deleteListing(id); router.push("/market"); }}
             style={{ width:"100%", padding:"12px", borderRadius:"4px", background:"transparent", border:"1px solid #e10600", color:"#e10600", fontSize:"11px", fontWeight:900, letterSpacing:"0.1em", textTransform:"uppercase", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
             <Trash2 size={13} /> Remove Listing

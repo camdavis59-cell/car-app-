@@ -1,18 +1,20 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Map, CalendarDays, User, ShoppingBag } from "lucide-react";
+import { Map, CalendarDays, User, ShoppingBag, Users } from "lucide-react";
 import { useStore } from "@/lib/store";
 
 const NAV = [
   { href: "/",        label: "MAP",     icon: Map          },
   { href: "/events",  label: "EVENTS",  icon: CalendarDays },
+  { href: "/clubs",   label: "CLUBS",   icon: Users        },
   { href: "/market",  label: "MARKET",  icon: ShoppingBag  },
   { href: "/profile", label: "PROFILE", icon: User         },
 ];
 
-const PROFILE_PATHS = ["/profile", "/garage", "/clubs", "/messages"];
+const PROFILE_PATHS = ["/profile", "/garage", "/messages"];
 const EVENTS_PATHS  = ["/events", "/rally"];
+const CLUBS_PATHS   = ["/clubs"];
 
 export default function Nav() {
   const path = usePathname();
@@ -52,6 +54,7 @@ export default function Nav() {
         {NAV.map(({ href, label, icon: Icon }) => {
           const on = path === href ||
             (href === "/events"  && EVENTS_PATHS.some(p => path === p || path.startsWith(p + "/"))) ||
+            (href === "/clubs"   && CLUBS_PATHS.some(p => path === p || path.startsWith(p + "/"))) ||
             (href === "/market"  && path.startsWith("/market")) ||
             (href === "/profile" && PROFILE_PATHS.some(p => path === p || path.startsWith(p + "/")));
           return (

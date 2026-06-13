@@ -112,8 +112,8 @@ export default function ProfilePage() {
         )}
 
         {/* Stats */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", border:"1px solid #2c2c3a", borderRadius:"4px", overflow:"hidden", marginBottom:"16px" }}>
-          {[{val:profile.followers,label:"FOLLOWERS"},{val:profile.following,label:"FOLLOWING"},{val:profile.eventsAttended,label:"EVENTS"},{val:profile.photosUploaded,label:"PHOTOS"}].map((s,i)=>(
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", border:"1px solid #2c2c3a", borderRadius:"4px", overflow:"hidden", marginBottom:"16px" }}>
+          {[{val:profile.eventsAttended,label:"EVENTS"},{val:profile.photosUploaded,label:"PHOTOS"},{val:clubs.filter(c=>c.adminHandle===profile.handle).length+2,label:"CLUBS"}].map((s,i)=>(
             <div key={s.label} style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"12px 0", borderLeft: i>0?"1px solid #2c2c3a":"none" }}>
               <span style={{ fontSize:"17px", fontWeight:900, color:"#fff" }}>{s.val}</span>
               <span style={{ ...S.label, marginTop:"2px", fontSize:"9px" }}>{s.label}</span>
